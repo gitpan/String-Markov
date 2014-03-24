@@ -1,9 +1,9 @@
 
 
 This archive contains the distribution String-Markov,
-version 0.005:
+version 0.006:
 
-  A Moose-based, text-oriented Markov Chain module
+  A Moo-based, text-oriented Markov Chain module
 
 This software is Copyright (c) 2014 by Grant Mathews.
 

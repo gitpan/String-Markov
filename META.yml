@@ -1,5 +1,5 @@
 ---
-abstract: 'A Moose-based, text-oriented Markov Chain module'
+abstract: 'A Moo-based, text-oriented Markov Chain module'
 author:
   - 'Grant Mathews <gmathews@cpan.org>'
 build_requires:
@@ -21,8 +21,8 @@ meta-spec:
 name: String-Markov
 requires:
   List::Util: 0
-  Moose: 0
+  Moo: 0
   Unicode::Normalize: 0
   namespace::autoclean: 0
   perl: 5.012
-version: 0.005
+version: 0.006

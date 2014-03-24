@@ -10,7 +10,7 @@ use ExtUtils::MakeMaker 6.30;
 
 
 my %WriteMakefileArgs = (
-  "ABSTRACT" => "A Moose-based, text-oriented Markov Chain module",
+  "ABSTRACT" => "A Moo-based, text-oriented Markov Chain module",
   "AUTHOR" => "Grant Mathews <gmathews\@cpan.org>",
   "BUILD_REQUIRES" => {},
   "CONFIGURE_REQUIRES" => {
@@ -22,7 +22,7 @@ my %WriteMakefileArgs = (
   "NAME" => "String::Markov",
   "PREREQ_PM" => {
     "List::Util" => 0,
-    "Moose" => 0,
+    "Moo" => 0,
     "Unicode::Normalize" => 0,
     "namespace::autoclean" => 0
   },
@@ -34,7 +34,7 @@ my %WriteMakefileArgs = (
     "open" => 0,
     "utf8" => 0
   },
-  "VERSION" => "0.005",
+  "VERSION" => "0.006",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -43,7 +43,7 @@ my %WriteMakefileArgs = (
 
 my %FallbackPrereqs = (
   "List::Util" => 0,
-  "Moose" => 0,
+  "Moo" => 0,
   "Storable" => 0,
   "Test::Deep" => 0,
   "Test::Exception" => 0,

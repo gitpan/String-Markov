@@ -1,11 +1,11 @@
 package String::Markov;
 
-# ABSTRACT: A Moose-based, text-oriented Markov Chain module
+# ABSTRACT: A Moo-based, text-oriented Markov Chain module
 
-our $VERSION = 0.005;
+our $VERSION = 0.006;
 
 use 5.010;
-use Moose;
+use Moo;
 use namespace::autoclean;
 
 use Unicode::Normalize qw(normalize);
@@ -14,7 +14,9 @@ use List::Util qw(sum);
 has normalize => (is => 'rw', default => 'C');
 has do_chomp  => (is => 'rw', default => 1);
 has null      => (is => 'ro', default => "\0");
-has order     => (is => 'ro', isa => 'Int', default => 2);
+has order     => (is => 'ro', isa => sub {
+	die "Need an integer greater than zero" if !$_[0] || $_[0] =~ /\D/;
+}, default => 2);
 
 has ['split_sep','join_sep'] => (
 	is => 'rw',
@@ -23,7 +25,7 @@ has ['split_sep','join_sep'] => (
 
 has ['transition_count','row_sum'] => (
 	is => 'ro',
-	isa => 'HashRef',
+	isa => sub { die "Need a hash ref" if ref $_[0] ne 'HASH'; },
 	default => sub { {} }
 );
 
@@ -40,6 +42,36 @@ around BUILDARGS => sub {
 
 	return $class->$orig(\%ahash);
 };
+
+sub join_prob {
+	my ($self, $orig_prob) = @_;
+	my %p;
+
+	@p{@{$orig_prob->[0]}} = @{$orig_prob->[1]};
+
+	return \%p;
+}
+
+sub split_prob {
+	my ($self, $orig_prob) = @_;
+
+	return [
+		[keys %$orig_prob],
+		[values %$orig_prob],
+	];
+}
+
+sub split_all_prob {
+	my $self = shift;
+	my $tc = $self->transition_count;
+	my $nt = {};
+
+	while (my ($state, $prob) = each %$tc) {
+		$nt->{$state} = $self->split_prob($prob);
+	}
+
+	%$tc = %$nt;
+}
 
 sub split_line {
 	my ($self, $sample) = @_;
@@ -74,6 +106,10 @@ sub add_sample {
 	for my $i (0 .. ($#nms - $n)) {
 		my $cur = join($sep, @nms[$i .. ($i + $n - 1)]);
 		my $nxt = $nms[$i + $n];
+		my $prob = $count->{$cur};
+		if ($prob && ref $prob ne 'HASH') {
+			$count->{$cur} = $self->join_prob($prob);
+		}
 		++$count->{$cur}{$nxt};
 		++$sum->{$cur};
 	}
@@ -91,6 +127,8 @@ sub add_files {
 		$self->add_sample($sample);
 	}
 
+	$self->split_all_prob();
+
 	return $self;
 }
 
@@ -105,16 +143,21 @@ sub sample_next_state {
 	my $thresh = $sum->{$cur};
 	return undef if !$thresh;
 
-	my $s = 0;
 	$thresh *= rand();
+
 	my $prob = $count->{$cur};
-	keys %$prob;
-	my ($k, $v);
-	while ($thresh > $s) {
-		($k, $v) = each %$prob;
-		$s += $v;
+	if (ref $prob ne 'ARRAY') {
+		$prob = $self->split_prob($prob);
+		$count->{$cur} = $prob;
 	}
-	return $k
+
+	my $s = 0;
+	my $i = 0;
+	my ($k, $v) = @{$prob};
+	do {
+		$s += $v->[$i];
+	} while ($thresh > $s && ++$i);
+	return $k->[$i];
 }
 
 sub generate_sample {
@@ -151,11 +194,11 @@ __END__
 
 =head1 NAME
 
-String::Markov - A Moose-based, text-oriented Markov Chain module
+String::Markov - A Moo-based, text-oriented Markov Chain module
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 
@@ -176,7 +219,7 @@ version 0.005
 
 =head1 DESCRIPTION
 
-String::Markov is a Moose-based Markov Chain module, designed to easily consume
+String::Markov is a Moo-based Markov Chain module, designed to easily consume
 and produce text.
 
 =head1 ATTRIBUTES
