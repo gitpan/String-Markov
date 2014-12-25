@@ -2,7 +2,7 @@ package String::Markov;
 
 # ABSTRACT: A Moo-based, text-oriented Markov Chain module
 
-our $VERSION = 0.006;
+our $VERSION = 0.007;
 
 use 5.010;
 use Moo;
@@ -11,12 +11,12 @@ use namespace::autoclean;
 use Unicode::Normalize qw(normalize);
 use List::Util qw(sum);
 
-has normalize => (is => 'rw', default => 'C');
-has do_chomp  => (is => 'rw', default => 1);
-has null      => (is => 'ro', default => "\0");
+has normalize => (is => 'rw', default => sub { 'C' });
+has do_chomp  => (is => 'rw', default => sub { 1 });
+has null      => (is => 'ro', default => sub { "\0" });
 has order     => (is => 'ro', isa => sub {
 	die "Need an integer greater than zero" if !$_[0] || $_[0] =~ /\D/;
-}, default => 2);
+}, default => sub { 2 });
 
 has ['split_sep','join_sep'] => (
 	is => 'rw',
@@ -190,15 +190,13 @@ __END__
 
 =pod
 
-=encoding UTF-8
-
 =head1 NAME
 
 String::Markov - A Moo-based, text-oriented Markov Chain module
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 SYNOPSIS
 
@@ -227,31 +225,31 @@ and produce text.
 =head2 order
 
 The order of the chain, i.e. how much past state is used to determine the next
-state. The default of 2 is for reasonable for constructing new names/words when
+state. The default of 2 is reasonable for constructing new names/words when
 splitting into characters, or for long-ish works when splitting into words.
 
 =head2 split_sep
 
 How states are split. This value (or I<sep>; see L</new()>) is passed directly
-as the first argument of L<perlfunc/split>, so using ' ' has special semantics.
-Regular expressions will work as well, but be aware that any matched characters
-are discarded.
+as the first argument to L<perlfunc/split>, so using C<' '> has special
+semantics.  Regular expressions will work as well, but be aware that any
+matched characters are discarded.
 
 =head2 join_sep
 
-How to re-join states. This value (or I<sep>; see L</new()>) is passed directly
-as the first argument of L<perlfunc/join>. In addition, it is used to build
-keys for internal hashes. This can cause problems in cases where split_sep()
-produces sequences like C<'ae', 'io'>, C<'a', 'ei', 'o'>, or C<'ae', 'i', 'o'>,
-which will all turn into C<'aeio'> with the default if C<''>. If I<join_sep> is
+How states are joined. This value (or I<sep>; see L</new()>) is passed as the
+first argument of L<perlfunc/join>. In addition, it is used to build keys for
+internal hashes. This can cause problems in cases where split_sep() produces
+sequences like C<'ae', 'io'>, C<'a', 'ei', 'o'>, or C<'ae', 'i', 'o'>, which
+will all turn into C<'aeio'> with the default of C<''>. If I<join_sep> is
 C<'*'> instead, then three unique keys result: C<'ae*io'>, C<'a*ei*o'>, and
 C<'ae*i*o'>. See L</add_sample()>.
 
 =head2 null
 
-What is used to track the beginning and end of a sample. The default of C<"\0">
-should work for UTF-8 text, but may cause problems with UTF-16 or other
-encodings.
+What is used to mark the beginning and end of a sample internally. The default
+of C<"\0"> should work for UTF-8 text, but may cause problems with UTF-16 or
+other encodings.
 
 =head2 normalize
 
@@ -280,7 +278,7 @@ Whether to L<perlfunc/chomp> lines when reading files. See L</add_files()>.
   );
 
 The I<sep> argument doesn't correlate to an attribute, but is used to
-initialize I<split_sep> or I<join_sep> if either is undefined.
+initialize I<split_sep> and/or I<join_sep> if either is undefined.
 
 See L</ATTRIBUTES>.
 
