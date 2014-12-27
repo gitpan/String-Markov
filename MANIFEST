@@ -7,4 +7,5 @@ README
 dist.ini
 lib/String/Markov.pm
 t/Markov.t
+t/fivelines.txt
 t/twolines.txt
