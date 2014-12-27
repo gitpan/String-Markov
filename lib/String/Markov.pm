@@ -2,7 +2,7 @@ package String::Markov;
 
 # ABSTRACT: A Moo-based, text-oriented Markov Chain module
 
-our $VERSION = 0.008;
+our $VERSION = 0.009;
 
 use 5.010;
 use Moo;
@@ -205,7 +205,7 @@ String::Markov - A Moo-based, text-oriented Markov Chain module
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 

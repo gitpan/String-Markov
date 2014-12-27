@@ -25,4 +25,4 @@ requires:
   Unicode::Normalize: 0
   namespace::autoclean: 0
   perl: 5.012
-version: 0.008
+version: 0.009
